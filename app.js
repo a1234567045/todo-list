@@ -2,6 +2,7 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const exphbs = require('express-handlebars')
+const Todo = require('./models/todo') //載入 Todo model
 const app = express()
 
 app.engine('hbs', exphbs({ defaultLayout: 'main', extname: '.hbs' }))
@@ -22,7 +23,10 @@ db.once('open', () => {
 
 // 設定首頁路由
 app.get('/', (req, res) => {
-  res.render('index')
+  Todo.find() //取出 Todo model 裡的所有物件
+    .lean() //把 Mongoose 的 Model 物件轉換成乾淨的 JavaScript 資料陣列
+    .then(todos => res.render('index', { todos })) // 將資料傳給 index 模板
+    .catch(error => console.error(error)) //錯誤處理
 })
 
 // 設定 port 3000
